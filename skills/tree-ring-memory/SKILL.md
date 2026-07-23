@@ -35,7 +35,11 @@ On macOS ARM64:
 ```bash
 brew tap TerminallyLazy/tree-ring
 brew install tree-ring
+tree-ring --version
 ```
+
+The multi-agent and coordinator commands below require `tree-ring 0.13.0` or
+newer.
 
 ## When To Recall
 
@@ -80,6 +84,10 @@ tree-ring remember "Use project-scoped recall before changing release behavior."
   --tag workflow
 ```
 
+That project-scoped example is valid in Open mode. In Coordinated mode, an
+ordinary worker must use matching agent scope and identity; shared/project
+writes require the coordinator capability.
+
 Use `tree-ring evidence` when the lesson comes from an evaluation, checkpoint,
 experiment, branch, incident, or reviewed run artifact.
 
@@ -90,12 +98,100 @@ tree-ring evidence "Migration smoke test passed with project-local memory." \
   --score 0.91
 ```
 
+In Coordinated mode, `tree-ring evidence` is a non-agent write and requires the
+coordinator capability.
+
 Evidence outcome mapping:
 
 - `promoted`: durable heartwood from supported evidence
 - `rejected`: scar for reusable failed or rolled-back approaches
 - `deferred`: seed for promising unresolved options
 - `observed`: outer-ring evaluation result
+
+## Multi-Agent Coordination
+
+For same-host fan-out/fan-in:
+
+- Give each worker a distinct `--agent-profile`.
+- Share one `--workflow-id` across the workflow.
+- Use a new `--session-id` for each execution attempt.
+- Give every logical write a stable `--operation-id` and durable
+  `--source-ref`.
+- Reuse the same session and operation IDs for an exact retry. Conflicting
+  reuse fails closed.
+- At fan-in, recall with the shared workflow, session, and intended scope.
+  Deliberately omit the agent-profile filter when the coordinator needs results
+  from every worker.
+
+Example worker write:
+
+```bash
+tree-ring remember "Storage validation completed." \
+  --event-type lesson \
+  --scope agent \
+  --agent-profile worker-storage \
+  --workflow-id release-readiness \
+  --session-id attempt-1 \
+  --operation-id validate-storage-v1 \
+  --source-ref runs/release-readiness/worker-storage.json
+```
+
+Example coordinator fan-in recall:
+
+```bash
+tree-ring recall "release readiness" \
+  --workflow-id release-readiness \
+  --session-id attempt-1 \
+  --scope agent
+```
+
+Scope and identity fields partition and route local memory; they are not read
+access-control boundaries. A shared SQLite root supports cooperative concurrent
+processes on one host using a local filesystem. Cross-host or
+network-filesystem workflows must use per-host stores plus an explicit,
+source-preserving fan-in.
+
+## Coordinated Write Policy
+
+Stores remain in backward-compatible Open mode until a coordinator explicitly
+enables Coordinated mode:
+
+```bash
+tree-ring policy enable --coordinator release-coordinator
+export TREE_RING_COORDINATOR_TOKEN='<one-time capability printed by enable>'
+tree-ring policy status
+tree-ring policy audit --limit 100
+tree-ring policy rotate --coordinator release-coordinator-next
+export TREE_RING_COORDINATOR_TOKEN='<new one-time capability printed by rotate>'
+tree-ring policy disable
+unset TREE_RING_COORDINATOR_TOKEN
+```
+
+Replace the environment value immediately after rotation. There is no token CLI
+flag. Never place the capability in prompts, memory events, logs, source
+references, or committed files. Inject it only into coordinator processes and
+remove it from every ordinary worker environment.
+
+In Coordinated mode, an ordinary worker may create only non-heartwood
+`scope=agent` memory whose `agent_profile` matches its `--agent-profile` or
+`TREE_RING_AGENT_PROFILE`. Shared or non-agent writes, heartwood, imports,
+persisted DOX/Revolve sync, persisted consolidation, ring changes,
+supersede/delete/redact, and applied maintenance require the coordinator
+capability. On an already-upgraded schema-v3 store, recall, export, adapter
+dry-runs, consolidation dry-runs, and plain report-only maintenance do not
+change memory content. Only `policy status` and `policy audit` are guaranteed
+never to create or migrate a store, so use them for pre-upgrade policy
+inspection.
+
+This is operational write authorization in official Rust and CLI paths. It is
+not a read ACL or protection against an adversary who controls local files or
+the process environment.
+
+Before a v0.13 binary first upgrades an existing store to schema v3, stop every
+Tree Ring process, checkpoint and back up the complete store, and upgrade every
+CLI, plugin, and bundled worker. Schema v3 fences memory inserts, updates, and
+deletes from v0.12 writers. Mixed-version operation is unsupported. Roll back
+only by stopping all processes and restoring the pre-upgrade backup.
 
 ## Ring Selection
 
@@ -137,8 +233,11 @@ If memory is wrong, private, stale, or superseded:
 tree-ring forget mem_example --mode delete --reason "example cleanup"
 tree-ring audit --audit-type sensitive
 tree-ring consolidate --period-type manual --dry-run
-tree-ring maintain --apply-expired --repair-fts
+tree-ring maintain
 ```
+
+Delete, redact, applied maintenance, and other lifecycle mutations require the
+coordinator capability when the store is in Coordinated mode.
 
 ## Source Adapters
 
