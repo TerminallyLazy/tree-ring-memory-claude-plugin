@@ -1,7 +1,7 @@
 {
   "name": "tree-ring-memory",
   "displayName": "Tree Ring Memory",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Local-first memory lifecycle guidance for Claude Code using Tree Ring Memory.",
   "author": {
     "name": "TerminallyLazy",

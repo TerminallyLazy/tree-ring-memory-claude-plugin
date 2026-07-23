@@ -12,18 +12,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate JSON
-        run: |
-          jq -e . .claude-plugin/plugin.json >/dev/null
-          jq -e . .claude-plugin/marketplace.json >/dev/null
-
-      - name: Validate plugin shape
-        run: |
-          test -f .claude-plugin/plugin.json
-          test -f .claude-plugin/marketplace.json
-          test -f skills/tree-ring-memory/SKILL.md
-          test -f commands/tree-ring-recall.md
-          test -f commands/tree-ring-capture.md
-          test -f commands/tree-ring-audit.md
-          grep -q '"name": "tree-ring-memory"' .claude-plugin/plugin.json
-          grep -q '"source": "./"' .claude-plugin/marketplace.json
+      - name: Validate plugin guidance
+        run: python3 scripts/validate.py

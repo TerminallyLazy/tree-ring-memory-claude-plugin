@@ -20,6 +20,8 @@ action is useful, source-linked, and privacy-safe.
 - Evidence-backed outcomes through `tree-ring evidence`.
 - Explicit forgetting, redaction, and supersession guidance.
 - DOX and Revolve adapter usage with dry-run-first guardrails.
+- Same-host multi-agent identity, idempotency, filtered fan-in, and optional
+  coordinator write-policy guidance.
 
 ## Install Tree Ring Memory
 
@@ -29,6 +31,18 @@ macOS ARM64 with Homebrew:
 brew tap TerminallyLazy/tree-ring
 brew install tree-ring
 ```
+
+The multi-agent and coordinator guidance requires Tree Ring Memory v0.13.0 or
+newer:
+
+```bash
+tree-ring --version
+tree-ring policy --help
+```
+
+Before a v0.13 binary upgrades an existing store to schema v3, stop every
+Tree Ring process, checkpoint and back up the complete store, and upgrade every
+CLI, plugin, and bundled worker. Mixed v0.12/v0.13 operation is unsupported.
 
 For other install paths, use the canonical project README:
 <https://github.com/TerminallyLazy/Tree-Ring-Memory#install>
@@ -65,6 +79,11 @@ The skill looks for project-local `.tree-ring/SKILL.md` and `.tree-ring/CLI.md`
 first. If they are absent, it falls back to the public CLI commands documented
 in the main framework repository.
 
+For fan-out/fan-in, the supported shared-root boundary is cooperative Tree Ring
+processes on one host and a local filesystem. Identity and scope route memory;
+they are not read access-control boundaries. Cross-host and network-filesystem
+workflows need per-host stores plus explicit, source-preserving fan-in.
+
 ## Canonical Project
 
 - Framework repo: <https://github.com/TerminallyLazy/Tree-Ring-Memory>
@@ -75,5 +94,9 @@ in the main framework repository.
 
 This plugin ships instructions only. It does not include remote MCP servers,
 webhooks, analytics, credentials, or networked runtime code.
+
+Coordinated mode uses a one-time capability only through
+`TREE_RING_COORDINATOR_TOKEN`. Keep it out of prompts, command arguments,
+memory, logs, source references, and ordinary worker environments.
 
 See [SECURITY.md](SECURITY.md) for disclosure and privacy guidance.
