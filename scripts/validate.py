@@ -164,6 +164,7 @@ def validate_workflow() -> None:
     require_markers(
         ".github/workflows/validate.yml",
         [
+            "actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd",
             'TREE_RING_VERSION: "0.13.0"',
             "cbe4c108c8881b2df1b72a26bfc86396dcdccba66fc8b976f340012e8c095e7d",
             "sha256sum --check --status",
