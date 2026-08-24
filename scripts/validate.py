@@ -9,7 +9,10 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_WRAPPER_VERSION = "0.3.0"
+EXPECTED_WRAPPER_VERSION = "0.3.1"
+UNSAFE_TOKEN_EXPORT = "export TREE_RING_COORDINATOR_TOKEN='<"
+CANONICAL_ISSUES = "https://github.com/TerminallyLazy/Tree-Ring-Memory/issues"
+CANONICAL_ADVISORY = "https://github.com/TerminallyLazy/Tree-Ring-Memory/security/advisories/new"
 
 
 def read(relative: str) -> str:
@@ -75,6 +78,7 @@ def validate_skill() -> None:
             "--operation-id",
             "--source-ref",
             "TREE_RING_COORDINATOR_TOKEN",
+            "history-safe, no-echo",
             "same-host local-filesystem processes",
             "not a read ACL",
             "schema v3",
@@ -203,6 +207,8 @@ def validate_security_boundary() -> None:
             "network-filesystem safety",
             "Harness Readiness",
             "Configuration alone is not",
+            CANONICAL_ADVISORY,
+            CANONICAL_ISSUES,
         ],
     )
 
@@ -212,6 +218,7 @@ def validate_security_boundary() -> None:
             "does not operate a hosted service",
             "local SQLite database",
             "does not receive that database",
+            CANONICAL_ISSUES,
         ],
     )
     require_markers(
@@ -219,16 +226,31 @@ def validate_security_boundary() -> None:
         [
             "MIT License",
             "provided without warranty",
+            CANONICAL_ISSUES,
         ],
     )
     require_markers(
         "SUBMISSION.md",
         [
-            "v0.3.0",
+            "v0.3.1",
             "claude plugin validate . --strict",
             "smoke_v014.sh",
         ],
     )
+    skill = read("skills/tree-ring-memory/SKILL.md")
+    if UNSAFE_TOKEN_EXPORT in skill:
+        raise SystemExit("token-bearing export example must not appear in the skill")
+    public_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in ROOT.rglob("*")
+        if path.is_file()
+        and ".git" not in path.parts
+        and path.resolve() != Path(__file__).resolve()
+        and path.suffix.lower()
+        in {".json", ".md", ".py", ".sh", ".toml", ".txt", ".yaml", ".yml"}
+    )
+    if "tree-ring-memory-claude-plugin/issues" in public_text:
+        raise SystemExit("support and security links must use the canonical repository")
 
 
 def validate_workflow() -> None:
