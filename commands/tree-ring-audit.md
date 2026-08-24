@@ -9,10 +9,15 @@ allowed-tools: ["Bash"]
 Audit memory when work is closing, when privacy may matter, or when older
 entries may be stale.
 
-Before any v0.13 command other than `policy status` or `policy audit` opens an
-existing pre-v0.13 store, stop every Tree Ring process, checkpoint and back up
-the complete store, and upgrade every CLI, plugin, and bundled worker.
-Mixed-version operation is unsupported.
+Read project-local `.tree-ring/SKILL.md` and `.tree-ring/CLI.md` first when
+present. Confirm `tree-ring --version` reports 0.14.0 or newer. If the runtime
+is missing or older, stop and explain the limitation; do not install, upgrade,
+or invent results without explicit user permission.
+
+Before any current command other than `policy status` or `policy audit` opens
+an existing pre-v0.13 store, stop every Tree Ring process, checkpoint and back
+up the complete store, and upgrade every CLI, plugin, and bundled worker. All
+mixed-version operation is unsupported.
 
 These policy preflight commands never create or migrate a store:
 
@@ -43,7 +48,8 @@ tree-ring forget mem_example --mode delete --reason "should not be retained"
 ```
 
 The CLI forget modes are `redact` and `delete`. For an explicit supersession,
-use the TUI's `/supersede <old_id>` lifecycle action.
+use the TUI's `/supersede <old_id>` lifecycle action. Clarify the exact memory
+identifier and mutation before running any lifecycle write.
 
 In Coordinated mode, forget/redact, supersede, persisted consolidation, and
 applied maintenance such as `--repair-fts` require

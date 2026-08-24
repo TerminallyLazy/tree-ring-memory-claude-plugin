@@ -22,6 +22,8 @@ action is useful, source-linked, and privacy-safe.
 - DOX and Revolve adapter usage with dry-run-first guardrails.
 - Same-host multi-agent identity, idempotency, filtered fan-in, and optional
   coordinator write-policy guidance.
+- Receipt-backed harness readiness that distinguishes configured bridges from
+  observed use in a fresh Claude Code session.
 
 ## Install Tree Ring Memory
 
@@ -32,17 +34,22 @@ brew tap TerminallyLazy/tree-ring
 brew install tree-ring
 ```
 
-The multi-agent and coordinator guidance requires Tree Ring Memory v0.13.0 or
+The plugin requires Tree Ring Memory v0.14.0 or
 newer:
 
 ```bash
 tree-ring --version
-tree-ring policy --help
+tree-ring integrations status --help
 ```
 
-Before a v0.13 binary upgrades an existing store to schema v3, stop every
+Before a current binary upgrades a pre-v0.13 store to schema v3, stop every
 Tree Ring process, checkpoint and back up the complete store, and upgrade every
-CLI, plugin, and bundled worker. Mixed v0.12/v0.13 operation is unsupported.
+CLI, plugin, and bundled worker. Do not use a v0.12 writer against schema v3;
+all mixed-version operation is unsupported.
+
+If the CLI is missing or older, the plugin reports the limitation. It does not
+install or upgrade software, edit shell configuration, or claim that a memory
+action ran without explicit user permission and observed command output.
 
 For other install paths, use the canonical project README:
 <https://github.com/TerminallyLazy/Tree-Ring-Memory#install>
@@ -63,6 +70,9 @@ After installation, Claude Code can use:
 /tree-ring-memory:tree-ring-recall
 /tree-ring-memory:tree-ring-capture
 /tree-ring-memory:tree-ring-audit
+/tree-ring-memory:tree-ring-status
+/tree-ring-memory:tree-ring-dox-sync
+/tree-ring-memory:tree-ring-certify
 ```
 
 ## Use
@@ -73,11 +83,39 @@ Ask Claude Code:
 Use Tree Ring Memory to recall durable project context before editing.
 Use Tree Ring Memory to capture this validated lesson without storing a transcript.
 Use Tree Ring Memory to audit stale or sensitive memory before closeout.
+Preview DOX contract summaries and sync only concise, source-linked guidance.
+Generate harness certification evidence without claiming full release certification.
 ```
 
 The skill looks for project-local `.tree-ring/SKILL.md` and `.tree-ring/CLI.md`
 first. If they are absent, it falls back to the public CLI commands documented
 in the main framework repository.
+
+For DOX projects, the plugin reads the applicable `AGENTS.md` chain before
+edits and keeps those live contracts authoritative. `/tree-ring-memory:tree-ring-dox-sync`
+previews the local adapter output before any persistence and never rewrites the
+source contracts.
+
+`/tree-ring-memory:tree-ring-certify` uses the installed CLI for harness or
+recall-quality evidence. The larger `scripts/certify-tree-ring.sh` suite remains
+exclusive to a complete Tree Ring framework source checkout; it is not bundled
+with this plugin.
+
+## Receipt-Backed Harness Readiness
+
+For a new project, start with:
+
+```bash
+tree-ring init
+tree-ring integrations status
+```
+
+Configuration is not activation proof. A harness is `active` only after a
+fresh, matching receipt shows scoped recall and safe context injection from a
+new session. States such as `configured-awaiting-proof`, `needs-trust`,
+`needs-plugin`, `needs-project-mount`, `needs-user-review`, and `unsupported`
+remain explicitly non-active. The `/tree-ring-memory:tree-ring-status` command
+reports the exact state without modifying trust, bridges, or receipts.
 
 For fan-out/fan-in, the supported shared-root boundary is cooperative Tree Ring
 processes on one host and a local filesystem. Identity and scope route memory;
@@ -89,6 +127,7 @@ workflows need per-host stores plus explicit, source-preserving fan-in.
 - Framework repo: <https://github.com/TerminallyLazy/Tree-Ring-Memory>
 - Launch page: <https://terminallylazy.github.io/Tree-Ring-Memory/>
 - Homebrew tap: <https://github.com/TerminallyLazy/homebrew-tree-ring>
+- v0.14 release: <https://github.com/TerminallyLazy/Tree-Ring-Memory/releases/tag/v0.14.0>
 
 ## Security
 
@@ -99,4 +138,5 @@ Coordinated mode uses a one-time capability only through
 `TREE_RING_COORDINATOR_TOKEN`. Keep it out of prompts, command arguments,
 memory, logs, source references, and ordinary worker environments.
 
-See [SECURITY.md](SECURITY.md) for disclosure and privacy guidance.
+See [PRIVACY.md](PRIVACY.md), [TERMS.md](TERMS.md), and
+[SECURITY.md](SECURITY.md) for data handling, use terms, and disclosures.
