@@ -10,8 +10,9 @@ Capture only durable, useful memory. Do not store transcripts, secrets,
 credentials, raw chain-of-thought, or unverified claims as truth.
 
 Read project-local `.tree-ring/SKILL.md` and `.tree-ring/CLI.md` first when
-present. Verify `tree-ring --version`; the coordination fields and policy
-commands require v0.13.0 or newer.
+present. Confirm `tree-ring --version` reports 0.14.0 or newer. If the runtime
+is missing or older, stop and explain the limitation; do not install, upgrade,
+or invent a stored memory without explicit user permission.
 
 For a single agent or a store in Open mode, use the user's argument as the
 memory summary:
@@ -46,8 +47,8 @@ actual memory:
 - `decision` for selected architecture, release, storage, or policy choices
 - `lesson` for validated work patterns
 - `warning` for failures and regressions to avoid
-- `preference` for durable user preferences
-- `seed` for future work that should be revisited
+- `user_preference` for durable user preferences
+- `hypothesis` for future work that should be revisited as a seed
 
 If the memory comes from a run, test, evaluation, incident, PR, or checkpoint,
 prefer `tree-ring evidence` with an `--evidence-ref` and outcome.

@@ -24,7 +24,7 @@ memory is wrong, sensitive, stale, or replaced by newer evidence.
 
 ## Coordinated Mode
 
-Tree Ring Memory v0.13 Coordinated mode uses a one-time capability supplied
+Tree Ring Memory Coordinated mode uses a one-time capability supplied
 only through `TREE_RING_COORDINATOR_TOKEN`. Never place its value in a prompt,
 CLI argument, memory event, log, source reference, committed file, or ordinary
 worker environment. Tree Ring stores only a hash of the capability.
@@ -34,6 +34,13 @@ It is not a read ACL, an operating-system security boundary, or protection
 against an adversary who controls the database files or process environment.
 The supported shared-root boundary is cooperative processes on one host using a
 local filesystem; it does not establish cross-host or network-filesystem safety.
+
+## Harness Readiness
+
+Tree Ring Memory v0.14 reports harness readiness from project-local
+configuration plus privacy-safe preflight receipts. Configuration alone is not
+activation. The plugin does not manufacture receipts, alter global trust, or
+hand-author Agent Zero activation capability descriptors.
 
 ## Reporting A Vulnerability
 

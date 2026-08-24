@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_WRAPPER_VERSION = "0.2.0"
+EXPECTED_WRAPPER_VERSION = "0.3.0"
 
 
 def read(relative: str) -> str:
@@ -19,8 +19,8 @@ def read(relative: str) -> str:
 
 def require_markers(relative: str, markers: list[str]) -> None:
     """Require every contract marker in a repository file."""
-    text = read(relative)
-    missing = [marker for marker in markers if marker not in text]
+    text = " ".join(read(relative).split())
+    missing = [marker for marker in markers if " ".join(marker.split()) not in text]
     if missing:
         raise SystemExit(f"{relative} is missing: {', '.join(missing)}")
 
@@ -42,12 +42,14 @@ def validate_manifests() -> None:
         raise SystemExit("marketplace.json must contain exactly one plugin")
     if plugins[0].get("source") != "./":
         raise SystemExit("marketplace plugin source must be ./")
-    if plugins[0].get("version") != EXPECTED_WRAPPER_VERSION:
-        raise SystemExit("marketplace plugin version is stale")
+    if "version" in plugins[0]:
+        raise SystemExit(
+            "marketplace entry must defer to plugin.json as the version authority"
+        )
 
 
 def validate_skill() -> None:
-    """Validate the bundled skill's v0.13 behavioral contract."""
+    """Validate the bundled skill's v0.14 behavioral contract."""
     relative = "skills/tree-ring-memory/SKILL.md"
     text = read(relative)
     if not text.startswith("---\n"):
@@ -55,18 +57,28 @@ def validate_skill() -> None:
     require_markers(
         relative,
         [
-            "tree-ring 0.13.0",
+            "0.14.0 or newer",
+            "Runtime Preflight",
+            "DOX Contract Flow",
+            "tree-ring dox sync --source-root <path> --dry-run",
+            "Certification Boundary",
+            "tree-ring integrations certify --source-root .",
+            "tree-ring recall-quality --source-root .",
+            "full framework release suite",
+            "tree-ring integrations status",
+            "configured-awaiting-proof",
+            "active-isolated",
+            "needs-plugin",
             "--agent-profile",
             "--workflow-id",
             "--session-id",
             "--operation-id",
             "--source-ref",
             "TREE_RING_COORDINATOR_TOKEN",
-            "one host",
-            "local filesystem",
+            "same-host local-filesystem processes",
             "not a read ACL",
             "schema v3",
-            "Mixed-version operation is unsupported",
+            "operation is unsupported",
         ],
     )
 
@@ -76,9 +88,12 @@ def validate_readme() -> None:
     require_markers(
         "README.md",
         [
-            "v0.13.0",
+            "v0.14.0",
+            "Receipt-Backed Harness Readiness",
+            "configured-awaiting-proof",
+            "needs-user-review",
             "schema v3",
-            "Mixed v0.12/v0.13 operation is unsupported",
+            "mixed-version operation is unsupported",
             "one host",
             "local filesystem",
             "not read access-control boundaries",
@@ -99,6 +114,7 @@ def validate_commands() -> None:
             "--operation-id",
             "--source-ref",
             "TREE_RING_COORDINATOR_TOKEN",
+            "0.14.0 or newer",
         ],
     )
     require_markers(
@@ -119,7 +135,37 @@ def validate_commands() -> None:
             "The CLI forget modes are `redact` and `delete`",
             "`/supersede <old_id>`",
             "never create or migrate a store",
-            "Mixed-version operation is unsupported",
+            "mixed-version operation is unsupported",
+        ],
+    )
+    require_markers(
+        "commands/tree-ring-certify.md",
+        [
+            "tree-ring integrations certify --source-root <project-root>",
+            "tree-ring recall-quality --source-root <project-root>",
+            "repository-only",
+            "does not execute the suite",
+        ],
+    )
+    require_markers(
+        "commands/tree-ring-dox-sync.md",
+        [
+            "tree-ring dox sync --source-root",
+            "--dry-run",
+            "Current source contracts are authoritative",
+            "must not rewrite root or child `AGENTS.md` files",
+            "TREE_RING_COORDINATOR_TOKEN",
+        ],
+    )
+    require_markers(
+        "commands/tree-ring-status.md",
+        [
+            "tree-ring integrations status --json --verbose",
+            "configured-awaiting-proof",
+            "needs-project-mount",
+            "needs-plugin",
+            "needs-user-review",
+            "Do not modify global trust",
         ],
     )
 
@@ -155,26 +201,54 @@ def validate_security_boundary() -> None:
             "one host",
             "local filesystem",
             "network-filesystem safety",
+            "Harness Readiness",
+            "Configuration alone is not",
+        ],
+    )
+
+    require_markers(
+        "PRIVACY.md",
+        [
+            "does not operate a hosted service",
+            "local SQLite database",
+            "does not receive that database",
+        ],
+    )
+    require_markers(
+        "TERMS.md",
+        [
+            "MIT License",
+            "provided without warranty",
+        ],
+    )
+    require_markers(
+        "SUBMISSION.md",
+        [
+            "v0.3.0",
+            "claude plugin validate . --strict",
+            "smoke_v014.sh",
         ],
     )
 
 
 def validate_workflow() -> None:
-    """Validate that CI executes a checksum-pinned v0.13 runtime smoke."""
+    """Validate that CI executes a checksum-pinned v0.14 runtime smoke."""
     require_markers(
         ".github/workflows/validate.yml",
         [
             "actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd",
-            'TREE_RING_VERSION: "0.13.0"',
-            "cbe4c108c8881b2df1b72a26bfc86396dcdccba66fc8b976f340012e8c095e7d",
+            'TREE_RING_VERSION: "0.14.0"',
+            "c72191aca81f195472272a1962df354fe0af04a08b01a7472a1faf987cd177fa",
             "sha256sum --check --status",
-            "bash scripts/smoke_v013.sh",
+            "bash scripts/smoke_v014.sh",
         ],
     )
     require_markers(
-        "scripts/smoke_v013.sh",
+        "scripts/smoke_v014.sh",
         [
-            "tree-ring 0.13.0",
+            "tree-ring 0.14.0",
+            "integrations status --json --verbose",
+            "fresh configuration must not report active",
             "TREE_RING_COORDINATOR_TOKEN",
             "--operation-id",
             "policy status",

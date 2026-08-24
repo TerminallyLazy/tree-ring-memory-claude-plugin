@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 env:
-  TREE_RING_VERSION: "0.13.0"
-  TREE_RING_LINUX_X86_64_SHA256: "cbe4c108c8881b2df1b72a26bfc86396dcdccba66fc8b976f340012e8c095e7d"
+  TREE_RING_VERSION: "0.14.0"
+  TREE_RING_LINUX_X86_64_SHA256: "c72191aca81f195472272a1962df354fe0af04a08b01a7472a1faf987cd177fa"
 
 jobs:
   validate:
@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
-      - name: Install checksum-pinned Tree Ring v0.13
+      - name: Install checksum-pinned Tree Ring v0.14
         shell: bash
         run: |
           set -euo pipefail
@@ -58,6 +58,14 @@ jobs:
       - name: Validate plugin guidance
         run: python3 scripts/validate.py
 
-      - name: Smoke Tree Ring v0.13 integration
+      - name: Validate with Claude Code 2.1.241
+        run: |
+          npx --yes @anthropic-ai/claude-code@2.1.241 plugin validate . --strict
+          npx --yes @anthropic-ai/claude-code@2.1.241 plugin validate \
+            .claude-plugin/plugin.json --strict
+          npx --yes @anthropic-ai/claude-code@2.1.241 plugin validate \
+            .claude-plugin/marketplace.json --strict
+
+      - name: Smoke Tree Ring v0.14 integration
         shell: bash
-        run: bash scripts/smoke_v013.sh
+        run: bash scripts/smoke_v014.sh

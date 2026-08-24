@@ -7,7 +7,7 @@ if [[ "${tree_ring_bin}" == */* ]]; then
 else
   command -v "${tree_ring_bin}" >/dev/null
 fi
-test "$("${tree_ring_bin}" --version)" = "tree-ring 0.13.0"
+test "$("${tree_ring_bin}" --version)" = "tree-ring 0.14.0"
 
 smoke_base="${RUNNER_TEMP:-${TMPDIR:-/tmp}}"
 smoke_base="${smoke_base%/}"
@@ -21,6 +21,30 @@ cleanup() {
   find "${smoke_dir}" -depth -delete
 }
 trap cleanup EXIT
+
+# A fresh project may be configured, but cannot be active without a matching
+# new-session preflight receipt.
+harness_project="${smoke_dir}/harness-project"
+mkdir -p "${harness_project}"
+(
+  cd "${harness_project}"
+  "${tree_ring_bin}" --root .tree-ring --json init \
+    > "${smoke_dir}/harness-init.json"
+  "${tree_ring_bin}" --root .tree-ring integrations status --json --verbose \
+    > "${smoke_dir}/harness-status.json"
+)
+TREE_RING_HARNESS_STATUS="${smoke_dir}/harness-status.json" python3 - <<'PY'
+import json
+import os
+
+with open(os.environ["TREE_RING_HARNESS_STATUS"], encoding="utf-8") as stream:
+    status = json.load(stream)
+integrations = status.get("integrations")
+if not isinstance(integrations, list) or not integrations:
+    raise SystemExit("expected integration status entries")
+if any(item.get("state") == "active" for item in integrations):
+    raise SystemExit("fresh configuration must not report active without a receipt")
+PY
 
 hash_file() {
   local file_path=$1
@@ -75,7 +99,7 @@ snapshot_tree "${legacy_root}" > "${smoke_dir}/legacy-after.sha256"
 cmp "${smoke_dir}/legacy-before.sha256" "${smoke_dir}/legacy-after.sha256"
 
 # Exercise the documented same-host Coordinated-mode workflow.
-store_root="${smoke_dir}/coordinated-store"
+store_root="${smoke_dir}/coordinated-project/.tree-ring"
 "${tree_ring_bin}" --root "${store_root}" init >/dev/null
 grant_json=$(
   "${tree_ring_bin}" \
@@ -168,18 +192,40 @@ results = value if isinstance(value, list) else value["results"]
 raise SystemExit(0 if len(results) == 1 else 1)' \
   <<<"${fan_in}"
 
-TREE_RING_COORDINATOR_TOKEN="${coordinator_capability}" \
-TREE_RING_AGENT_PROFILE=coordinator \
-TREE_RING_WORKFLOW_ID=release-smoke \
-TREE_RING_SESSION_ID=attempt-1 \
-  "${tree_ring_bin}" \
-  --root "${store_root}" \
-  remember "Coordinator-approved shared result." \
-  --event-type lesson \
-  --scope project \
-  --operation-id coordinator-shared-v1 \
-  --source-ref runs/release-smoke/coordinator.json \
-  >/dev/null
+printf '%s' "${coordinator_capability}" | \
+  TREE_RING_TEST_BINARY="${tree_ring_bin}" \
+  TREE_RING_TEST_ROOT="${store_root}" \
+  python3 -c '
+import os
+import subprocess
+import sys
+
+environment = os.environ.copy()
+environment["TREE_RING_COORDINATOR" + "_TOKEN"] = sys.stdin.read()
+environment["TREE_RING_AGENT_PROFILE"] = "coordinator"
+environment["TREE_RING_WORKFLOW_ID"] = "release-smoke"
+environment["TREE_RING_SESSION_ID"] = "attempt-1"
+subprocess.run(
+    [
+        environment["TREE_RING_TEST_BINARY"],
+        "--root",
+        environment["TREE_RING_TEST_ROOT"],
+        "remember",
+        "Coordinator-approved shared result.",
+        "--event-type",
+        "lesson",
+        "--scope",
+        "project",
+        "--operation-id",
+        "coordinator-shared-v1",
+        "--source-ref",
+        "runs/release-smoke/coordinator.json",
+    ],
+    check=True,
+    env=environment,
+    stdout=subprocess.DEVNULL,
+)
+'
 
 status_output=$(
   "${tree_ring_bin}" --root "${store_root}" policy status
@@ -209,4 +255,4 @@ snapshot_tree "${store_root}" > "${smoke_dir}/upgraded-before.sha256"
 snapshot_tree "${store_root}" > "${smoke_dir}/upgraded-after.sha256"
 cmp "${smoke_dir}/upgraded-before.sha256" "${smoke_dir}/upgraded-after.sha256"
 
-printf 'Tree Ring v0.13 integration smoke passed\n'
+printf 'Tree Ring v0.14 integration smoke passed\n'
