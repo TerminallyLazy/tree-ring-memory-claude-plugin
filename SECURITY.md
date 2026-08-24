@@ -48,5 +48,9 @@ Open a private vulnerability report on the canonical framework repository:
 
 <https://github.com/TerminallyLazy/Tree-Ring-Memory/security/advisories/new>
 
-If GitHub advisories are unavailable, open a minimal public issue without
-including exploit details or sensitive data.
+Use the canonical issue tracker only for non-sensitive support:
+
+<https://github.com/TerminallyLazy/Tree-Ring-Memory/issues>
+
+Never include vulnerability details, secrets, tokens, private memory contents,
+or personal data in a public issue.
