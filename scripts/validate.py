@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_WRAPPER_VERSION = "0.3.1"
+EXPECTED_WRAPPER_VERSION = "0.3.2"
 UNSAFE_TOKEN_EXPORT = "export TREE_RING_COORDINATOR_TOKEN='<"
 CANONICAL_ISSUES = "https://github.com/TerminallyLazy/Tree-Ring-Memory/issues"
 CANONICAL_ADVISORY = "https://github.com/TerminallyLazy/Tree-Ring-Memory/security/advisories/new"
@@ -52,7 +52,7 @@ def validate_manifests() -> None:
 
 
 def validate_skill() -> None:
-    """Validate the bundled skill's v0.14 behavioral contract."""
+    """Validate the bundled skill's v0.15 behavioral contract."""
     relative = "skills/tree-ring-memory/SKILL.md"
     text = read(relative)
     if not text.startswith("---\n"):
@@ -60,8 +60,10 @@ def validate_skill() -> None:
     require_markers(
         relative,
         [
-            "0.14.0 or newer",
-            "Runtime Preflight",
+            "0.15.0 or newer",
+            "Runtime Bootstrap And Updates",
+            "--project --init --release latest --no-animation",
+            "tree-ring update --check",
             "DOX Contract Flow",
             "tree-ring dox sync --source-root <path> --dry-run",
             "Certification Boundary",
@@ -92,7 +94,7 @@ def validate_readme() -> None:
     require_markers(
         "README.md",
         [
-            "v0.14.0",
+            "v0.15.0",
             "Receipt-Backed Harness Readiness",
             "configured-awaiting-proof",
             "needs-user-review",
@@ -118,7 +120,7 @@ def validate_commands() -> None:
             "--operation-id",
             "--source-ref",
             "TREE_RING_COORDINATOR_TOKEN",
-            "0.14.0 or newer",
+            "0.15.0 or newer",
         ],
     )
     require_markers(
@@ -170,6 +172,15 @@ def validate_commands() -> None:
             "needs-plugin",
             "needs-user-review",
             "Do not modify global trust",
+        ],
+    )
+    require_markers(
+        "commands/tree-ring-update.md",
+        [
+            "tree-ring update --check",
+            "preserve the active",
+            "CLIs older than 0.15.0",
+            "--root .tree-ring init",
         ],
     )
 
@@ -232,9 +243,9 @@ def validate_security_boundary() -> None:
     require_markers(
         "SUBMISSION.md",
         [
-            "v0.3.1",
+            "v0.3.2",
             "claude plugin validate . --strict",
-            "smoke_v014.sh",
+            "smoke_v015.sh",
         ],
     )
     skill = read("skills/tree-ring-memory/SKILL.md")
@@ -254,21 +265,21 @@ def validate_security_boundary() -> None:
 
 
 def validate_workflow() -> None:
-    """Validate that CI executes a checksum-pinned v0.14 runtime smoke."""
+    """Validate that CI executes a checksum-pinned v0.15 runtime smoke."""
     require_markers(
         ".github/workflows/validate.yml",
         [
             "actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd",
-            'TREE_RING_VERSION: "0.14.0"',
-            "c72191aca81f195472272a1962df354fe0af04a08b01a7472a1faf987cd177fa",
+            'TREE_RING_VERSION: "0.15.0"',
+            "9b47873268dbb94712a49b02bd785cc69507facee1e879e46e6922778b4afbe6",
             "sha256sum --check --status",
-            "bash scripts/smoke_v014.sh",
+            "bash scripts/smoke_v015.sh",
         ],
     )
     require_markers(
-        "scripts/smoke_v014.sh",
+        "scripts/smoke_v015.sh",
         [
-            "tree-ring 0.14.0",
+            "tree-ring 0.15.0",
             "integrations status --json --verbose",
             "fresh configuration must not report active",
             "TREE_RING_COORDINATOR_TOKEN",

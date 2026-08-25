@@ -37,7 +37,7 @@ local filesystem; it does not establish cross-host or network-filesystem safety.
 
 ## Harness Readiness
 
-Tree Ring Memory v0.14 reports harness readiness from project-local
+Tree Ring Memory v0.15 reports harness readiness from project-local
 configuration plus privacy-safe preflight receipts. Configuration alone is not
 activation. The plugin does not manufacture receipts, alter global trust, or
 hand-author Agent Zero activation capability descriptors.
