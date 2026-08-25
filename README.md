@@ -24,17 +24,18 @@ action is useful, source-linked, and privacy-safe.
   coordinator write-policy guidance.
 - Receipt-backed harness readiness that distinguishes configured bridges from
   observed use in a fresh Claude Code session.
+- Verified project-local CLI bootstrap and scope-preserving update guidance.
 
 ## Install Tree Ring Memory
 
-macOS ARM64 with Homebrew:
+From the actual project root, after the user has authorized Tree Ring setup:
 
 ```bash
-brew tap TerminallyLazy/tree-ring
-brew install tree-ring
+curl -fsSL https://raw.githubusercontent.com/TerminallyLazy/Tree-Ring-Memory/main/install.sh | sh -s -- --project --init --release latest --no-animation
+.tree-ring/bin/tree-ring --root .tree-ring integrations status --verbose
 ```
 
-The plugin requires Tree Ring Memory v0.14.0 or
+The plugin requires Tree Ring Memory v0.15.0 or
 newer:
 
 ```bash
@@ -47,9 +48,13 @@ Tree Ring process, checkpoint and back up the complete store, and upgrade every
 CLI, plugin, and bundled worker. Do not use a v0.12 writer against schema v3;
 all mixed-version operation is unsupported.
 
-If the CLI is missing or older, the plugin reports the limitation. It does not
-install or upgrade software, edit shell configuration, or claim that a memory
-action ran without explicit user permission and observed command output.
+If the CLI is missing or older, the plugin may bootstrap or update it when the
+user's request already authorizes Tree Ring setup. Otherwise it explains the
+exact operation and asks before downloading or changing software. Use
+`tree-ring update --check` for a read-only release check and, with update
+authorization, `tree-ring update` to preserve the active install scope. It does
+not edit shell configuration, change global scope, or claim that a memory
+action ran without the required authorization and observed command output.
 
 For other install paths, use the canonical project README:
 <https://github.com/TerminallyLazy/Tree-Ring-Memory#install>
@@ -73,6 +78,7 @@ After installation, Claude Code can use:
 /tree-ring-memory:tree-ring-status
 /tree-ring-memory:tree-ring-dox-sync
 /tree-ring-memory:tree-ring-certify
+/tree-ring-memory:tree-ring-update
 ```
 
 ## Use
@@ -127,7 +133,7 @@ workflows need per-host stores plus explicit, source-preserving fan-in.
 - Framework repo: <https://github.com/TerminallyLazy/Tree-Ring-Memory>
 - Launch page: <https://terminallylazy.github.io/Tree-Ring-Memory/>
 - Homebrew tap: <https://github.com/TerminallyLazy/homebrew-tree-ring>
-- v0.14 release: <https://github.com/TerminallyLazy/Tree-Ring-Memory/releases/tag/v0.14.0>
+- v0.15 release: <https://github.com/TerminallyLazy/Tree-Ring-Memory/releases/tag/v0.15.0>
 
 ## Security
 
