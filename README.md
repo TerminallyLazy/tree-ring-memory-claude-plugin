@@ -30,10 +30,17 @@ action is useful, source-linked, and privacy-safe.
 
 From the actual project root, after the user has authorized Tree Ring setup:
 
+Download the official version-pinned `v0.15.0/install.sh` to a temporary file,
+verify its SHA-256 is
+`ef0d5eb8f09cbe2e4c3abe80ee9a98a56759c89ad4ddd103d6c68314cd653ade`, inspect
+it, then run these commands from the project root:
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/TerminallyLazy/Tree-Ring-Memory/main/install.sh | sh -s -- --project --init --release latest --no-animation
+sh <verified-installer-path> --project --init --release latest --no-animation
 .tree-ring/bin/tree-ring --root .tree-ring integrations status --verbose
 ```
+
+Do not pipe a network response directly to a shell.
 
 The plugin requires Tree Ring Memory v0.15.0 or
 newer:
@@ -133,7 +140,7 @@ workflows need per-host stores plus explicit, source-preserving fan-in.
 - Framework repo: <https://github.com/TerminallyLazy/Tree-Ring-Memory>
 - Launch page: <https://terminallylazy.github.io/Tree-Ring-Memory/>
 - Homebrew tap: <https://github.com/TerminallyLazy/homebrew-tree-ring>
-- v0.15 release: <https://github.com/TerminallyLazy/Tree-Ring-Memory/releases/tag/v0.15.0>
+- v0.15 release: <https://github.com/TerminallyLazy/Tree-Ring-Memory/releases/tag/v0.15.1>
 
 ## Security
 
