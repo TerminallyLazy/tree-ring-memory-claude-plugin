@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_WRAPPER_VERSION = "0.3.2"
+EXPECTED_WRAPPER_VERSION = "0.3.4"
 UNSAFE_TOKEN_EXPORT = "export TREE_RING_COORDINATOR_TOKEN='<"
 CANONICAL_ISSUES = "https://github.com/TerminallyLazy/Tree-Ring-Memory/issues"
 CANONICAL_ADVISORY = "https://github.com/TerminallyLazy/Tree-Ring-Memory/security/advisories/new"
@@ -243,7 +243,7 @@ def validate_security_boundary() -> None:
     require_markers(
         "SUBMISSION.md",
         [
-            "v0.3.2",
+            "v0.3.4",
             "claude plugin validate . --strict",
             "smoke_v015.sh",
         ],
@@ -270,8 +270,8 @@ def validate_workflow() -> None:
         ".github/workflows/validate.yml",
         [
             "actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd",
-            'TREE_RING_VERSION: "0.15.0"',
-            "9b47873268dbb94712a49b02bd785cc69507facee1e879e46e6922778b4afbe6",
+            'TREE_RING_VERSION: "0.15.7"',
+            "5c9da887e212b1a7222205d2a661910276171a927d7677f09ec097f2cddd26b7",
             "sha256sum --check --status",
             "bash scripts/smoke_v015.sh",
         ],
@@ -279,7 +279,7 @@ def validate_workflow() -> None:
     require_markers(
         "scripts/smoke_v015.sh",
         [
-            "tree-ring 0.15.0",
+            "tree-ring 0.15.7",
             "integrations status --json --verbose",
             "fresh configuration must not report active",
             "TREE_RING_COORDINATOR_TOKEN",

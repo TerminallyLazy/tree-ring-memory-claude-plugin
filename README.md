@@ -8,9 +8,10 @@ that teach agents when to recall, write, audit, consolidate, and forget project
 memory using the open-source
 [Tree Ring Memory](https://github.com/TerminallyLazy/Tree-Ring-Memory) CLI.
 
-It does not run a background service, scrape chats, capture transcripts, install
-hooks, or ship a networked MCP server. The active agent chooses when a memory
-action is useful, source-linked, and privacy-safe.
+The plugin registers native startup recall and bounded stop checkpoints.
+Automatic lifecycle hooks require CLI `0.15.6` or newer. It does not run a
+background service, scrape chats, capture transcripts, or ship a networked MCP
+server. The active agent evaluates durable outcomes before any capture.
 
 ## What It Adds
 
@@ -153,3 +154,60 @@ memory, logs, source references, and ordinary worker environments.
 
 See [PRIVACY.md](PRIVACY.md), [TERMS.md](TERMS.md), and
 [SECURITY.md](SECURITY.md) for data handling, use terms, and disclosures.
+
+## Automatic Lifecycle Hooks
+
+The repository plugin registers exactly `SessionStart`, `SubagentStart`,
+`Stop`, and `SubagentStop`. Each hook forwards its event JSON directly to the
+local CLI and waits synchronously for at most 10 seconds. It does not register
+prompt, tool, compaction, or `SessionEnd` hooks; run a background service;
+scrape chats; or ship an MCP server.
+
+Session start covers startup, resume, and compaction rehydration when the host
+reports those sources. Subagent start gives each worker an independent,
+receipt-backed preflight. Codex requires review and trust of the installed hook
+definition before it runs. Claude Code loads the hook with the enabled plugin.
+
+Startup recall loads a bounded brief of shared project guidance and this
+agent's durable memories, including captures from earlier sessions. Workflow
+and session memories remain limited to their matching scope. It does not
+depend on memories containing special startup keywords. Use targeted recall
+when the task changes; the startup brief is not an exhaustive search.
+
+Stop and subagent-stop enforce one agent-mediated memory checkpoint. The
+lifecycle parser uses only stable harness identity and project fields; it never
+inspects or persists `transcript_path`, `last_assistant_message`, prompts, or
+transcript content. The checkpoint asks the active agent to evaluate its
+already-grounded work. If and only if that evaluation yields a concise,
+durable, normal-sensitivity candidate, the agent automatically runs the exact
+strict `tree-ring capture` command template returned by the lifecycle handler.
+Strict capture fixes agent scope, requires identity and provenance, adds an
+automatic-capture tag, and rejects sensitive candidates. No candidate means no
+memory write. This is one bounded checkpoint, not a recorder or automatic
+summary of every turn.
+
+The hook wrapper resolves the Git project root when available, prefers that
+project's `.tree-ring/bin/tree-ring`, and otherwise uses `tree-ring` from
+`PATH`. It then invokes the shared lifecycle entry point with the project-local
+`.tree-ring` root. An unavailable or incompatible CLI is not active-harness
+proof and cannot be reported as a successful checkpoint or capture.
+
+When project activation has already installed the managed lifecycle definition
+in `.codex/hooks.json` or `.claude/settings.json`, that project definition owns
+recall and stop checkpoints. The marketplace wrapper detects the exact managed
+marker and exits without invoking the CLI, preventing duplicate context,
+receipts, checkpoint continuations, or capture attempts when the host merges
+project and plugin hooks.
+
+`integrations status --verbose` reports the last validated recall's result
+count and query class. A zero-result receipt proves the check ran; it does not
+prove that useful context was found. A skills-only plugin installation has no
+automatic lifecycle hooks; enable the repository plugin or configure the
+project with the CLI to obtain them. A newly configured Codex hook still needs
+the host's trust flow and a new session before automatic execution can be
+verified.
+
+Installer onboarding requires CLI 0.15.7 or newer to create the activation
+manifest and native project hooks in the same install action. On earlier 0.15
+CLIs, run `tree-ring init` explicitly after the installer. Onboarding readiness
+is configuration; a fresh host receipt is required to prove automatic recall.
