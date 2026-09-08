@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_WRAPPER_VERSION = "0.3.4"
+EXPECTED_WRAPPER_VERSION = "0.3.5"
 UNSAFE_TOKEN_EXPORT = "export TREE_RING_COORDINATOR_TOKEN='<"
 CANONICAL_ISSUES = "https://github.com/TerminallyLazy/Tree-Ring-Memory/issues"
 CANONICAL_ADVISORY = "https://github.com/TerminallyLazy/Tree-Ring-Memory/security/advisories/new"
@@ -243,7 +243,7 @@ def validate_security_boundary() -> None:
     require_markers(
         "SUBMISSION.md",
         [
-            "v0.3.4",
+            "v0.3.5",
             "claude plugin validate . --strict",
             "smoke_v015.sh",
         ],
