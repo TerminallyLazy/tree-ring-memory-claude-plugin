@@ -5,7 +5,7 @@
 - Name: Tree Ring Memory
 - Plugin identifier: `tree-ring-memory`
 - Source: <https://github.com/TerminallyLazy/tree-ring-memory-claude-plugin>
-- Release: `v0.3.2`
+- Release: `v0.3.4`
 - Category: Developer Tools / Workflow Orchestration
 - License: MIT
 - Homepage: <https://terminallylazy.github.io/Tree-Ring-Memory/>
@@ -24,7 +24,8 @@ Description:
 - One provider-neutral Tree Ring Memory skill.
 - Slash commands for recall, capture, read-only audit, and receipt-backed
   harness status.
-- No hooks, remote MCP server, background service, analytics, credentials, or
+- Native SessionStart, SubagentStart, Stop, and SubagentStop hooks; CLI >=0.15.6.
+- No remote MCP server, background service, analytics, credentials, or
   installation-time scripts.
 
 ## Validation
@@ -34,6 +35,7 @@ claude plugin validate . --strict
 claude plugin validate .claude-plugin/plugin.json --strict
 claude plugin validate .claude-plugin/marketplace.json --strict
 python3 scripts/validate.py
+python3 scripts/validate-lifecycle.py
 bash scripts/smoke_v015.sh
 ```
 
