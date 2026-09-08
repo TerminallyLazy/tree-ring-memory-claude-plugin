@@ -5,7 +5,7 @@
 - Name: Tree Ring Memory
 - Plugin identifier: `tree-ring-memory`
 - Source: <https://github.com/TerminallyLazy/tree-ring-memory-claude-plugin>
-- Release: `v0.3.4`
+- Release: `v0.3.5`
 - Category: Developer Tools / Workflow Orchestration
 - License: MIT
 - Homepage: <https://terminallylazy.github.io/Tree-Ring-Memory/>

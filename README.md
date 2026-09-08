@@ -201,9 +201,8 @@ project and plugin hooks.
 
 `integrations status --verbose` reports the last validated recall's result
 count and query class. A zero-result receipt proves the check ran; it does not
-prove that useful context was found. A skills-only plugin installation has no
-automatic lifecycle hooks; enable the repository plugin or configure the
-project with the CLI to obtain them. A newly configured Codex hook still needs
+prove that useful context was found. Older skills-only packages omitted
+automatic lifecycle hooks. Current Git and public upload packages include them. A newly configured Codex hook still needs
 the host's trust flow and a new session before automatic execution can be
 verified.
 
