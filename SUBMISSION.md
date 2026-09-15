@@ -5,7 +5,7 @@
 - Name: Tree Ring Memory
 - Plugin identifier: `tree-ring-memory`
 - Source: <https://github.com/TerminallyLazy/tree-ring-memory-claude-plugin>
-- Release: `v0.3.6`
+- Release: `v0.3.7`
 - Category: Developer Tools / Workflow Orchestration
 - License: MIT
 - Homepage: <https://terminallylazy.github.io/Tree-Ring-Memory/>
@@ -25,8 +25,10 @@ Description:
 - Slash commands for recall, capture, read-only audit, and receipt-backed
   harness status.
 - Native SessionStart, SubagentStart, Stop, and SubagentStop hooks; CLI >=0.15.6.
+- Hooks quietly skip absent project-local memory; existing or symlinked roots
+  retain runtime diagnostics. Managed-hook ownership remains local for Claude.
 - DOX persistence requires CLI >=0.15.11; older compatible runtimes are preview-only.
-  Lifecycle hook bytes and general runtime compatibility are unchanged.
+  General runtime compatibility is unchanged.
 - No remote MCP server, background service, analytics, credentials, or
   installation-time scripts.
 
