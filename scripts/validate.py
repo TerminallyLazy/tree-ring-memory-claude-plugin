@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_WRAPPER_VERSION = "0.3.5"
+EXPECTED_WRAPPER_VERSION = "0.3.6"
 UNSAFE_TOKEN_EXPORT = "export TREE_RING_COORDINATOR_TOKEN='<"
 CANONICAL_ISSUES = "https://github.com/TerminallyLazy/Tree-Ring-Memory/issues"
 CANONICAL_ADVISORY = "https://github.com/TerminallyLazy/Tree-Ring-Memory/security/advisories/new"
@@ -65,6 +65,10 @@ def validate_skill() -> None:
             "--project --init --release latest --no-animation",
             "tree-ring update --check",
             "DOX Contract Flow",
+            'version: "0.15.11"',
+            "DOX Persistence Compatibility",
+            "DOX persistence requires Tree Ring CLI 0.15.11 or newer",
+            "Older runtimes may preview with `--dry-run`, but must not persist DOX summaries",
             "tree-ring dox sync --source-root <path> --dry-run",
             "Certification Boundary",
             "tree-ring integrations certify --source-root .",
@@ -160,6 +164,8 @@ def validate_commands() -> None:
             "--dry-run",
             "Current source contracts are authoritative",
             "must not rewrite root or child `AGENTS.md` files",
+            "Tree Ring CLI 0.15.11 or newer",
+            "Older runtimes may preview, but must not persist DOX summaries",
             "TREE_RING_COORDINATOR_TOKEN",
         ],
     )
@@ -243,7 +249,7 @@ def validate_security_boundary() -> None:
     require_markers(
         "SUBMISSION.md",
         [
-            "v0.3.5",
+            "v0.3.6",
             "claude plugin validate . --strict",
             "smoke_v015.sh",
         ],
@@ -270,8 +276,8 @@ def validate_workflow() -> None:
         ".github/workflows/validate.yml",
         [
             "actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd",
-            'TREE_RING_VERSION: "0.15.7"',
-            "5c9da887e212b1a7222205d2a661910276171a927d7677f09ec097f2cddd26b7",
+            'TREE_RING_VERSION: "0.15.12"',
+            "44aca4c82e0d9b51af54b2a9ed5447e38097cca193ecbf43ac2ae6f1b0adfbe2",
             "sha256sum --check --status",
             "bash scripts/smoke_v015.sh",
         ],
@@ -279,7 +285,9 @@ def validate_workflow() -> None:
     require_markers(
         "scripts/smoke_v015.sh",
         [
-            "tree-ring 0.15.7",
+            "tree-ring 0.15.12",
+            "DOX root provenance collides",
+            "repeated DOX sync must not create duplicates",
             "integrations status --json --verbose",
             "fresh configuration must not report active",
             "TREE_RING_COORDINATOR_TOKEN",
