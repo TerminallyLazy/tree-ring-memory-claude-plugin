@@ -110,6 +110,13 @@ edits and keeps those live contracts authoritative. `/tree-ring-memory:tree-ring
 previews the local adapter output before any persistence and never rewrites the
 source contracts.
 
+Before any DOX write, verify the selected project-local or PATH binary with
+`--version` and require CLI **0.15.11 or newer**. Older compatible runtimes may
+preview with `--dry-run`, but must not persist DOX summaries. After an authorized
+upgrade, rerun and review the preview. This DOX-only minimum adds atomic
+source-root collision checks so a conflicting batch cannot overwrite another
+project's guidance; general CLI and lifecycle-hook compatibility is unchanged.
+
 `/tree-ring-memory:tree-ring-certify` uses the installed CLI for harness or
 recall-quality evidence. The larger `scripts/certify-tree-ring.sh` suite remains
 exclusive to a complete Tree Ring framework source checkout; it is not bundled
@@ -141,7 +148,7 @@ workflows need per-host stores plus explicit, source-preserving fan-in.
 - Framework repo: <https://github.com/TerminallyLazy/Tree-Ring-Memory>
 - Launch page: <https://terminallylazy.github.io/Tree-Ring-Memory/>
 - Homebrew tap: <https://github.com/TerminallyLazy/homebrew-tree-ring>
-- v0.15 release: <https://github.com/TerminallyLazy/Tree-Ring-Memory/releases/tag/v0.15.1>
+- v0.15 release: <https://github.com/TerminallyLazy/Tree-Ring-Memory/releases/tag/v0.15.11>
 
 ## Security
 
